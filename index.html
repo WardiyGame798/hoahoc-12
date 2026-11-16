@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạm Ôn Hóa Của Nồng Nọc</title>
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --primary-hover: #ff4757;
+            --secondary: #1e90ff;
+            --bg: #fff5f7;
+            --card: #ffffff;
+            --text: #2f3542;
+            --success: #2ed573;
+            --danger: #ff4757;
+            --warning: #ffa502;
+        }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container { width: 100%; max-width: 650px; }
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(255, 107, 129, 0.15);
+            margin-bottom: 16px;
+            border: 2px solid #ffe4e8;
+        }
+        h1, h2, h3 { color: var(--primary); text-align: center; margin-top: 0; }
+        .cute-badge {
+            display: inline-block;
+            background: #ffeaa7;
+            color: #d35400;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        .welcome-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.15s, background 0.2s;
+            box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3);
+            margin-bottom: 10px;
+        }
+        .btn:hover, .btn:focus { background: var(--primary-hover); transform: scale(1.02); outline: 3px solid var(--secondary); }
+        .btn-secondary { background: var(--secondary); box-shadow: 0 4px 12px rgba(30, 144, 255, 0.3); }
+        .btn-secondary:hover { background: #1c7ed6; }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); box-shadow: none; }
+        .btn-outline:hover { background: #fff0f3; }
+
+        /* Khung chọn chương */
+        .chapter-box {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .chapter-box label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .chapter-select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 2px solid #dfe4ea;
+            background: #f1f2f6;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .chapter-select:focus { border-color: var(--primary); outline: 3px solid var(--secondary); background: #fff; }
+
+        /* Bảng chọn thời gian */
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .time-btn {
+            background: #f1f2f6;
+            color: var(--text);
+            border: 2px solid #dfe4ea;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .time-btn:focus, .time-btn:hover { border-color: var(--primary); background: #ffe4e8; outline: 3px solid var(--secondary); }
+
+        /* Thanh trạng thái làm bài */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffe4e8;
+            padding: 12px 18px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .timer { color: var(--danger); font-size: 1.15rem; }
+
+        /* Câu hỏi & Đáp án */
+        .q-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 16px; line-height: 1.5; }
+        .option-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .option-item[aria-checked="true"] {
+            background: #dff9fb;
+            border-color: var(--secondary);
+            font-weight: 700;
+        }
+        .tf-row {
+            background: #f8f9fa;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #dee2e6;
+        }
+        .tf-text { margin-bottom: 10px; font-weight: 500; }
+        .tf-controls { display: flex; gap: 10px; }
+        .tf-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ced6e0;
+            background: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .tf-btn[aria-checked="true"].yes { background: #2ed573; color: white; border-color: #2ed573; }
+        .tf-btn[aria-checked="true"].no { background: #ff4757; color: white; border-color: #ff4757; }
+
+        .nav-row { display: flex; gap: 10px; margin-top: 16px; }
+        .hidden { display: none !important; }
+
+        /* Kết quả & Cà khịa */
+        .score-box {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        .roast-box {
+            background: #fff9db;
+            border-left: 5px solid var(--warning);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .review-card {
+            border-left: 5px solid var(--danger);
+            background: #fff5f5;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        .review-card.correct { border-left-color: var(--success); background: #f0fff4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- MÀN HÌNH 1: TRANG CHỦ -->
+        <section id="home-screen" class="card" aria-label="Trang chủ chào mừng">
+            <div style="text-align: center;"><span class="cute-badge">🐸 Góc Học Tập Siêu Cấp</span></div>
+            <h1>Chào mừng Nồng Nọc!</h1>
+            <p class="welcome-text">
+                Ủa alo <b>Nồng Nọc</b> ơi! Bơi lội trong bể chữ lâu rồi, hôm nay đã chuẩn bị tinh thần quẫy đuôi hóa rồng, bóp nát môn Hóa học chưa đấy? Đừng để công thức Hóa học biến bạn thành cá cảnh nhé!
+            </p>
+            <button class="btn" onclick="showTimeModal()" aria-label="Bắt đầu làm bài kiểm tra">🚀 Bắt đầu làm bài ngay!</button>
+        </section>
+
+        <!-- MÀN HÌNH 2: CHỌN CHƯƠNG & THỜI GIAN -->
+        <section id="time-screen" class="card hidden" aria-label="Chọn chương và thời gian làm bài">
+            <h2>⏳ Cấu Hình Bài Thi Của Nồng Nọc</h2>
+            
+            <!-- Phần chọn chương -->
+            <div class="chapter-box">
+                <label for="chapterSelect">📖 Chọn nội dung ôn tập:</label>
+                <select id="chapterSelect" class="chapter-select">
+                    <option value="all">🌟 Trộn toàn bộ 8 chương (Đề tổng hợp)</option>
+                    <option value="1">Chương 1</option>
+                    <option value="2">Chương 2</option>
+                    <option value="3">Chương 3</option>
+                    <option value="4">Chương 4</option>
+                    <option value="5">Chương 5</option>
+                    <option value="6">Chương 6</option>
+                    <option value="7">Chương 7</option>
+                    <option value="8">Chương 8</option>
+                </select>
+            </div>
+
+            <p style="text-align: center; margin-bottom: 8px; font-weight: 600;">Chọn mức thời gian làm bài:</p>
+            <div class="time-grid">
+                <button class="time-btn" onclick="startQuiz(15)">15 Phút (Tốc chiến)</button>
+                <button class="time-btn" onclick="startQuiz(30)">30 Phút (Khởi động)</button>
+                <button class="time-btn" onclick="startQuiz(45)">45 Phút (Chuẩn bài)</button>
+                <button class="time-btn" onclick="startQuiz(60)">60 Phút (Chắc cú)</button>
+                <button class="time-btn" style="grid-column: span 2;" onclick="startQuiz(90)">90 Phút (Trùm cuối thong thả)</button>
+            </div>
+            <button class="btn btn-outline" style="margin-top: 16px;" onclick="goHome()">⬅ Quay lại trang chủ</button>
+        </section>
+
+        <!-- MÀN HÌNH 3: LÀM BÀI THI -->
+        <section id="quiz-screen" class="hidden" aria-label="Khu vực làm bài thi">
+            <div class="quiz-header">
+                <span id="q-progress" aria-live="polite">Câu 1 / 28</span>
+                <span id="timer-display" class="timer" aria-label="Thời gian còn lại">⏱ 45:00</span>
+            </div>
+            <div id="question-container" class="card"></div>
+            <div class="nav-row">
+                <button id="prev-btn" class="btn btn-outline" onclick="prevQ()">⬅ Câu trước</button>
+                <button id="next-btn" class="btn btn-secondary" onclick="nextQ()">Câu sau ➡</button>
+            </div>
+            <button class="btn" style="margin-top: 10px;" onclick="confirmSubmit()">✅ Nộp bài & Chấm điểm</button>
+        </section>
+
+        <!-- MÀN HÌNH 4: KẾT QUẢ & CÀ KHỊA -->
+        <section id="result-screen" class="card hidden" aria-label="Kết quả bài thi">
+            <div style="text-align: center;"><span class="cute-badge">🎯 Bảng Vàng Ghi Danh</span></div>
+            <h2>Kết Quả Của Nồng Nọc</h2>
+            <div id="final-score" class="score-box" aria-live="polite">0.00 điểm</div>
+            <p id="score-detail" style="text-align: center; font-weight: 600;"></p>
+            <div id="roast-message" class="roast-box" aria-live="polite"></div>
+            <button class="btn btn-secondary" onclick="showReview()">🔍 Xem lại chi tiết đúng / sai</button>
+            <button class="btn btn-outline" onclick="goHome()">🔄 Làm đề mới (Trộn câu hỏi)</button>
+        </section>
+
+        <!-- MÀN HÌNH 5: XEM LẠI LỖI SAI -->
+        <section id="review-screen" class="card hidden" aria-label="Chi tiết bài làm và giải thích">
+            <h2>📖 Soi Kính Hiển Vi Bài Làm</h2>
+            <div id="review-list"></div>
+            <button class="btn" onclick="backToResult()">⬅ Quay lại bảng điểm</button>
+        </section>
+    </div>
+
+    <!-- Nhúng 8 file JS tương ứng với 8 chương -->
+    <script src="chuong1.js"></script>
+    <script src="chuong2.js"></script>
+    <script src="chuong3.js"></script>
+    <script src="chuong4.js"></script>
+    <script src="chuong5.js"></script>
+    <script src="chuong6.js"></script>
+    <script src="chuong7.js"></script>
+    <script src="chuong8.js"></script>
+
+    <script>
+        let examQuestions = [];
+        let currentIdx = 0;
+        let userAnswers = {};
+        let timerInterval = null;
+        let timeRemaining = 0;
+
+        function shuffle(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function switchScreen(screenId) {
+            ['home-screen', 'time-screen', 'quiz-screen', 'result-screen', 'review-screen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function goHome() {
+            clearInterval(timerInterval);
+            switchScreen('home-screen');
+        }
+
+        function showTimeModal() {
+            switchScreen('time-screen');
+        }
+
+        function startQuiz(minutes) {
+            // Lấy lựa chọn chương của người dùng từ dropdown
+            const selectedChapter = document.getElementById('chapterSelect').value;
+            let activePool = [];
+
+            // Gom dữ liệu từ các file JS tương ứng
+            if (selectedChapter === 'all') {
+                activePool = [
+                    ...(typeof CHAPTER_1 !== 'undefined' ? CHAPTER_1 : []),
+                    ...(typeof CHAPTER_2 !== 'undefined' ? CHAPTER_2 : []),
+                    ...(typeof CHAPTER_3 !== 'undefined' ? CHAPTER_3 : []),
+                    ...(typeof CHAPTER_4 !== 'undefined' ? CHAPTER_4 : []),
+                    ...(typeof CHAPTER_5 !== 'undefined' ? CHAPTER_5 : []),
+                    ...(typeof CHAPTER_6 !== 'undefined' ? CHAPTER_6 : []),
+                    ...(typeof CHAPTER_7 !== 'undefined' ? CHAPTER_7 : []),
+                    ...(typeof CHAPTER_8 !== 'undefined' ? CHAPTER_8 : [])
+                ];
+            } else {
+                const chapterMap = {
+                    '1': typeof CHAPTER_1 !== 'undefined' ? CHAPTER_1 : [],
+                    '2': typeof CHAPTER_2 !== 'undefined' ? CHAPTER_2 : [],
+                    '3': typeof CHAPTER_3 !== 'undefined' ? CHAPTER_3 : [],
+                    '4': typeof CHAPTER_4 !== 'undefined' ? CHAPTER_4 : [],
+                    '5': typeof CHAPTER_5 !== 'undefined' ? CHAPTER_5 : [],
+                    '6': typeof CHAPTER_6 !== 'undefined' ? CHAPTER_6 : [],
+                    '7': typeof CHAPTER_7 !== 'undefined' ? CHAPTER_7 : [],
+                    '8': typeof CHAPTER_8 !== 'undefined' ? CHAPTER_8 : []
+                };
+                activePool = chapterMap[selectedChapter] || [];
+            }
+
+            if (activePool.length === 0) {
+                alert(`Chưa có dữ liệu câu hỏi cho chương này (hoặc chưa tạo file chuong${selectedChapter}.js tương ứng) rồi bro ơi!`);
+                return;
+            }
+
+            // Lọc tối đa 24 câu trắc nghiệm (MCQ) và 4 câu đúng/sai (TF) rồi trộn ngẫu nhiên
+            const mcqs = shuffle(activePool.filter(q => q.type === 'MCQ')).slice(0, 24);
+            const tfs = shuffle(activePool.filter(q => q.type === 'TF')).slice(0, 4);
+            
+            examQuestions = [...mcqs, ...tfs];
+
+            if (examQuestions.length === 0) {
+                alert("Kho câu hỏi của mục này đang trống rỗng, bro nạp dữ liệu vào file JS nhé!");
+                return;
+            }
+
+            currentIdx = 0;
+            userAnswers = {};
+
+            // Cài đặt đồng hồ
+            timeRemaining = minutes * 60;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Hết giờ rồi Nồng Nọc ơi! Hệ thống tự động thu bài nhé!");
+                    calculateResult();
+                }
+            }, 1000);
+
+            switchScreen('quiz-screen');
+            renderQuestion();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+            const s = (timeRemaining % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `⏱ ${m}:${s}`;
+        }
+
+        function renderQuestion() {
+            const q = examQuestions[currentIdx];
+            const container = document.getElementById('question-container');
+            document.getElementById('q-progress').innerText = `Câu ${currentIdx + 1} / ${examQuestions.length} (${q.type === 'MCQ' ? 'Trắc nghiệm' : 'Đúng / Sai'})`;
+            
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').disabled = currentIdx === examQuestions.length - 1;
+
+            let html = `<div class="q-title">Câu ${currentIdx + 1}: ${q.question}</div>`;
+
+            if (q.type === 'MCQ') {
+                const labels = ['A', 'B', 'C', 'D'];
+                html += `<div role="radiogroup" aria-label="Chọn một đáp án">`;
+                q.options.forEach((opt, i) => {
+                    const key = labels[i];
+                    const isChecked = userAnswers[currentIdx] === key;
+                    html += `
+                        <button class="option-item" role="radio" aria-checked="${isChecked}" 
+                            aria-label="Đáp án ${key}: ${opt}" onclick="selectMCQ('${key}')">
+                            <b>${key}.</b> ${opt}
+                        </button>`;
+                });
+                html += `</div>`;
+            } else if (q.type === 'TF') {
+                // Dạng đúng sai gồm 4 ý nhỏ
+                if (!userAnswers[currentIdx]) userAnswers[currentIdx] = {};
+                const subLabels = ['a', 'b', 'c', 'd'];
+                q.statements.forEach((stmt, i) => {
+                    const subKey = subLabels[i];
+                    const ans = userAnswers[currentIdx][subKey];
+                    html += `
+                        <div class="tf-row">
+                            <div class="tf-text"><b>Ý ${subKey}:</b> ${stmt.text}</div>
+                            <div class="tf-controls" role="radiogroup" aria-label="Chọn Đúng hoặc Sai cho ý ${subKey}">
+                                <button class="tf-btn yes" role="radio" aria-checked="${ans === true}" onclick="selectTF('${subKey}', true)">Đúng</button>
+                                <button class="tf-btn no" role="radio" aria-checked="${ans === false}" onclick="selectTF('${subKey}', false)">Sai</button>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        function selectMCQ(key) {
+            userAnswers[currentIdx] = key;
+            renderQuestion();
+        }
+
+        function selectTF(subKey, val) {
+            if (!userAnswers[currentIdx]) userAnswers[currentIdx] = {};
+            userAnswers[currentIdx][subKey] = val;
+            renderQuestion();
+        }
+
+        function prevQ() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+        function nextQ() { if (currentIdx < examQuestions.length - 1) { currentIdx++; renderQuestion(); } }
+
+        function confirmSubmit() {
+            if (confirm("Nồng Nọc chắc chắn muốn nộp bài chưa? Nộp rồi là không quay xe được đâu nha!")) {
+                clearInterval(timerInterval);
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            let correctCount = 0; // Mỗi ý đúng được 0.25 điểm (24 MCQ + 16 ý TF = 40 ý = 10 điểm)
+            let totalItems = 0;
+
+            examQuestions.forEach((q, idx) => {
+                if (q.type === 'MCQ') {
+                    totalItems++;
+                    if (userAnswers[idx] === q.answer) correctCount++;
+                } else if (q.type === 'TF') {
+                    const subLabels = ['a', 'b', 'c', 'd'];
+                    q.statements.forEach((stmt, sIdx) => {
+                        totalItems++;
+                        const subKey = subLabels[sIdx];
+                        if (userAnswers[idx] && userAnswers[idx][subKey] === stmt.answer) {
+                            correctCount++;
+                        }
+                    });
+                }
+            });
+
+            // Quy đổi ra thang điểm 10
+            const score = totalItems > 0 ? ((correctCount / totalItems) * 10) : 0;
+            const roundedScore = Math.round(score * 100) / 100;
+
+            document.getElementById('final-score').innerText = `${roundedScore.toFixed(2)} điểm`;
+            document.getElementById('score-detail').innerText = `Nồng Nọc làm đúng ${correctCount} / ${totalItems} ý (Mỗi ý đúng tính điểm tương ứng)`;
+            document.getElementById('roast-message').innerText = getRoastMessage(roundedScore);
+
+            switchScreen('result-screen');
+        }
+
+        function getRoastMessage(score) {
+            if (score < 3.5) {
+                return "😭 Trời đất quỷ thần ơi Nồng Nọc! Điểm này chắc tổ tiên ngành Hóa học nhìn thấy cũng phải bật dậy đòi lại bảng tuần hoàn mất thôi. Bơi về bờ ôn bài gấp đi chứ còn gì nữa!";
+            } else if (score < 5.0) {
+                return "😅 Cố gắng lắm rồi đấy Nồng Nọc nhưng mà... vẫn chưa đủ sức để hóa rồng đâu! Mới mọc được hai cái chân sau thôi, đọc lại lý thuyết đi rồi tính tiếp nhé!";
+            } else if (score < 6.5) {
+                return "🙂 Tạm ổn áp! Mức điểm trung bình khá, đủ để không bị trôi sông lạc chợ. Nồng Nọc chịu khó cày thêm tí nữa là sắp thành ếch cốm rồi đấy!";
+            } else if (score < 8.0) {
+                return "😎 Ghê nha Nồng Nọc! Khá là mượt mà và sáng láng đấy. Kiến thức cũng ra gì và này nọ phết, ráng nhích thêm xíu nữa là lên đỉnh luôn!";
+            } else if (score < 9.5) {
+                return "🔥 Đỉnh chóp Nồng Nọc ơi! Điểm này thì chỉ có nước đi thi học sinh giỏi hoặc ngồi trên đầu thiên hạ thôi. Quá xuất sắc, bái phục!";
+            } else {
+                return "👑 Trùm cuối xuất hiện! 9.5 đến 10 điểm tròn trĩnh! Thôi khỏi nói nhiều, Nồng Nọc đã chính thức tiến hóa thành Rồng Thần Hóa Học rồi. Quá dữ dội!";
+            }
+        }
+
+        function showReview() {
+            const list = document.getElementById('review-list');
+            let html = '';
+
+            examQuestions.forEach((q, idx) => {
+                if (q.type === 'MCQ') {
+                    const userAns = userAnswers[idx] || 'Chưa chọn';
+                    const isRight = userAns === q.answer;
+                    html += `
+                        <div class="review-card ${isRight ? 'correct' : ''}">
+                            <div><b>Câu ${idx + 1}:</b> ${q.question}</div>
+                            <div style="margin-top:6px;">Bạn chọn: <b>${userAns}</b> | Đáp án đúng: <b>${q.answer}</b></div>
+                            <div style="margin-top:6px; font-style: italic;">💡 Giải thích: ${q.explanation}</div>
+                        </div>`;
+                } else if (q.type === 'TF') {
+                    const subLabels = ['a', 'b', 'c', 'd'];
+                    let subHtml = '';
+                    q.statements.forEach((stmt, sIdx) => {
+                        const subKey = subLabels[sIdx];
+                        const uVal = userAnswers[idx] ? userAnswers[idx][subKey] : undefined;
+                        const uText = uVal === true ? 'Đúng' : (uVal === false ? 'Sai' : 'Bỏ trống');
+                        const rightText = stmt.answer ? 'Đúng' : 'Sai';
+                        const isSubRight = uVal === stmt.answer;
+                        subHtml += `
+                            <div style="margin-top:8px; padding-left:10px; border-left: 3px solid ${isSubRight ? '#2ed573' : '#ff4757'}">
+                                <div><b>Ý ${subKey}:</b> ${stmt.text}</div>
+                                <div>Chọn: <b>${uText}</b> | Đúng: <b>${rightText}</b> — <i>${stmt.explanation}</i></div>
+                            </div>`;
+                    });
+                    html += `
+                        <div class="review-card">
+                            <div><b>Câu ${idx + 1} (Đúng/Sai):</b> ${q.question}</div>
+                            ${subHtml}
+                        </div>`;
+                }
+            });
+
+            list.innerHTML = html;
+            switchScreen('review-screen');
+        }
+
+        function backToResult() {
+            switchScreen('result-screen');
+        }
+    </script>
+</body>
+</html>
